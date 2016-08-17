@@ -9,28 +9,57 @@
 
 var database = firebase.database();
 
-function changeToHours(time){
-    //we will take the military time and then use moment.js to change to 12-hour format
-    var result = moment.duration(time, "HH:mm").as('hours');
-    console.log(result);    
+function findNextArrival(firstTime, frequency) {
+   
+    //push the time a year back to make sure its way before current time
+
+    var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
+    console.log(firstTimeConverted);
+
+    var currentTime = moment();
+    var formatCurrentTime = moment(currentTime).format("hh:mm");
+
+    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+
+    //remainder
+
+    var remainder = diffTime % frequency;
+
+    //minutes till train arrive
+
+    var arrive = frequency - remainder;
+
+
+    // time the next train will come
+    var nextTrain = moment().add(arrive, "minutes");
+
+    return arrive, nextTrain;
+
+    console.log(arrive, nextTrain);
+
 }
+
+
+// function calcTotalBilled(months, rate) {
+//     return (months * rate).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+// }
 
 database.ref().on("child_added", function(childSnapshot) {
 
-        // var name = childSnapshot.val().name;
-        // var destination = childSnapshot.val().destination;
-        // var frequency = childSnapshot.val().frequency;
-        var nextArrival = changeToHours(time);
-        // var minutesAway = childSnapshot.val().minutesAway;
+        var name = childSnapshot.val().name;
+        var destination = childSnapshot.val().role;
+        var frequency = childSnapshot.val().date;
+        var nextArrival = findNextArrival(frequency, firstTime);
+        // var minutesAway = calcTotalBilled(calcMonthsWorked(date), rate);
 
-        var $newRow = $("<tr class=\"train\"></tr>");
-        var $name = $("<td class=\"train-name\">" + name + "</td>");
-        var $destination = $("<td class=\"destination\">" + destination + "</td>");
-        var $frequency = $("<td class=\"frequency\">" + frequency + "</td>");
-        var $nextArrival = $("<td class=\"nextArrival\">" + nextArrival + "</td>");
-        // var $minutesAway = $("<td class=\"minutesAway\">" + minutesAway + "</td>");append($newRow.append($name)  .append($destination).append($frequency).append($minutesAway)
+        var $newRow = $("<tr class=\"employee\"></tr>");
+        var $name = $("<td class=\"employee-name\">" + name + "</td>");
+        var $destination = $("<td class=\"role\">" + destination + "</td>");
+        var $frequency = $("<td class=\"start-date\">" + frequency + "</td>");
+        var $nextArrival = $("<td class=\"months-worked\">" + nextArrival + "</td>");
+        // var $minutesAway = $("<td class=\"monthly-rate\">$" + minutesAway + "</td>");.append($minutesAway)
 
-        $("tbody").append($nextArrival);
+        $("tbody").append($newRow.append($name).append($destination).append($frequency).append($nextArrival));
 
     return false;
 });
@@ -38,13 +67,13 @@ database.ref().on("child_added", function(childSnapshot) {
 $(document).on("click", "#addTrain", function(snapshot) {
     var $name = $("#trainInput").val();
     var $destination = $("#destinationInput").val();
-    var $time = $("#timeInput").val();
+    var $firstTime = $("#timeInput").val();
     var $frequency = $("#frequencyInput").val();
 
     database.ref().push({
         name: $name,
         destination: $destination,
-        time: $time,
+        time: $firstTime,
         frequency: $frequency
     });
 });
