@@ -1,4 +1,15 @@
 # TrainScheduler
+Live Link to Project: https://lit-sea-97448.herokuapp.com/?
+
+~~~~~
+Technologies Used:
+*HTML
+*Bootstrap
+*Firebase
+*Moment.js
+~~~~~
+![](http://i.giphy.com/25dRLj67pGZUs.gif)
+
 ### Overview
 I created a train schedule application that incorporates Firebase to host arrival and departure data. My app retrieves and manipulates this information with Moment.js. This website provides up-to-date information about various trains, namely their arrival times and how many minutes remain until they arrive at their station.
 
